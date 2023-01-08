@@ -21,5 +21,4 @@
 Makefile
 doc
 vendor
-website
 cmd/website/website
