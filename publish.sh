@@ -4,7 +4,7 @@ BASE="$BSD_DEV/website"
 WWW="$BASE/www"
 INDEX=$WWW/index.html
 LIVE="/.worker/gate/var/squid/reports"
-PAGES="$BSD_DEV/paepckehh.github.io"
+TARGETPAGES="$BSD_DEV/paepckehh.github.io $BSD_DEV/pages"
 if [ ! -x "$BASE" ]; then exit 1; fi
 UUID="$(uuidgen)"
 mv -f $WWW $WWW.$UUID > /dev/null 2>&1
@@ -96,17 +96,19 @@ cp -f $BASE/.template.keys $WWW/keys/keys
 cp -f $BASE/.template.keys $WWW/paepcke.keys
 chown -R 0:0 $WWW
 chmod -R o=rX,g=rX,u=rX $WWW
-if [ -x "$PAGES" ]; then
-	cp -af $WWW/* $PAGES/
-	(
-		cd $PAGES && (
-			/usr/bin/git add .
-			/usr/bin/git commit -m "gen static site preview"
-			/usr/bin/git gc
-			if [ "$DIST" == "pnoc" ]; then sh /etc/action/git.push; fi
+for PAGES in $TARGETPAGES; do
+	if [ -x "$PAGES" ]; then
+		cp -af $WWW/* $PAGES/
+		(
+			cd $PAGES && (
+				/usr/bin/git add .
+				/usr/bin/git commit -m "generate static site"
+				/usr/bin/git gc
+				if [ "$DIST" == "pnoc" ]; then sh /etc/action/git.push; fi
+			)
 		)
-	)
-fi
+	fi
+done
 if [ -x "$LIVE" ]; then
 	mv -f $LIVE/www $LIVE/www.$UUID
 	cp -af $WWW $LIVE/
