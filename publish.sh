@@ -1,4 +1,5 @@
 #!/bin/sh
+hq u
 BSDlive goo
 BASE="$BSD_DEV/website"
 WWW="$BASE/www"
