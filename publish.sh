@@ -90,7 +90,7 @@ ls -I $BSD_DEV | while read line; do
 		echo "###################################################################################"
 	fi
 done
-echo "</table></div><br><br><br><br><a href="imp.html"><button>[impressum]</button></a><br></body></html>" >> $INDEX
+echo "</table></div><br><br><br><br><a href="imp.html"><button>[impressum][contact]</button></a><br></body></html>" >> $INDEX
 cp -f $BASE/.template.imp.html $WWW/imp.html
 cp -f $BASE/.template.keys $WWW/keys/keys
 cp -f $BASE/.template.keys $WWW/paepcke.keys
