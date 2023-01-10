@@ -50,6 +50,7 @@ ls -I $BSD_DEV | while read line; do
 		# sh /etc/goo/goo.mdtohtml $BSD_DEV/$line/README.md readme.html
 		cd $BSD_DEV/$line > /dev/null 2>&1 || continue
 		if [ -x .git ]; then
+			if [ "$FIXURL" == "true" ]; then goo.xurls.fix README.md; fi
 			if [ "$DIST" == "pnoc" ]; then
 				if [ -e go.mod ]; then
 					export HTTPS_PROXY=127.0.0.80:8080
@@ -116,3 +117,4 @@ if [ -x "$LIVE" ]; then
 	rm -rf $LIVE/www.$UUID > /dev/null 2>&1
 fi
 if [ "$DIST" == "bsrv" ]; then cd $GOMODCACHE && fsdd --hard-link .; fi
+xurls -fix=all
