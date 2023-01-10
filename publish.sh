@@ -80,9 +80,9 @@ ls -I $BSD_DEV | while read line; do
 				/usr/bin/git prune-packed
 				/usr/bin/git fsck --strict --unreachable --dangling --full --cache
 			fi
-			LATEST=$(doasgit -C $BSD_GIT/.repo/github_com_paepckehh_$line tag | tail -n 1)
-			echo "$line => tag: $LATEST"
 			if [ ! -z "$UPSIG" ]; then
+				LATEST=$(doasgit -C $BSD_GIT/.repo/github_com_paepckehh_$line describe --tags --abbrev=0)
+				echo "$line => tag: $LATEST"
 				HQ_ADD_SIGNIFY=true sh /etc/action/git.sign github_com_paepckehh_$line $LATEST
 			fi
 		fi
