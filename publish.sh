@@ -117,4 +117,3 @@ if [ -x "$LIVE" ]; then
 	rm -rf $LIVE/www.$UUID > /dev/null 2>&1
 fi
 if [ "$DIST" == "bsrv" ]; then cd $GOMODCACHE && fsdd --hard-link .; fi
-xurls -fix=all
