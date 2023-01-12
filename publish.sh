@@ -49,7 +49,7 @@ clean_push() {
 	/usr/bin/git rm -r --cached .
 	/usr/bin/git add .
 	/usr/bin/git commit -m "auto: sync upstream / update dependencies"
-	/usr/bin/git gc --auto || exit 1
+	/usr/bin/git gc --quiet --auto || exit 1
 	# sh /etc/action/git.push
 }
 build_project() {
@@ -87,7 +87,6 @@ build_project() {
 	echo "<tr><td><a href="$REPO"><button>$REPO</button></a></td></tr>" >> $INDEX
 	cd $BSD_DEV/$REPO > /dev/null 2>&1 || continue
 	if [ -x .git ]; then
-		/usr/bin/git gc --auto --force || exit 1
 		if [ "$DIST" == "pnoc" ]; then clean_push; fi
 		if [ "$DIST" == "bsrv" ]; then rebuild; fi
 		if [ ! -z "$UPSIG" ]; then
@@ -103,6 +102,16 @@ build_project() {
 	echo "###################################################################################"
 }
 action() {
+	echo "## START REPO HEALTH CHECKS & CACHING"
+	for REPO in $REPOS; do
+		cd $BSD_DEV/$REPO && (
+			if [ -e .export ] && [ -x .git ]; then
+				echo -n "[$REPO] "
+				/usr/bin/git gc --quiet || exit 1
+			fi
+		)
+	done
+	echo && echo "## DONE REPO HEALTH CHECKS & CACHING"
 	for REPO in $REPOS; do
 		cd $BSD_DEV/$REPO && if [ -e .export ]; then build_project; fi
 	done
