@@ -33,14 +33,14 @@ rebuild() {
 	/usr/bin/git fsck --strict --unreachable --dangling --full --cache
 }
 retag() {
-		LATEST="$(/usr/bin/git describe --tags --abbrev=0)"
-		RELEA="$((  $(echo $LATEST | cut -d . -f 1) + 0  ))"
-		MAJOR="$((  $(echo $LATEST | cut -d . -f 2) + 0  ))"
-		MINOR="$((  $(echo $LATEST | cut -d . -f 3) + 1  ))"
-		if [ "$RELEA" = "0" ] && [ "$MAJOR" = "0" ] && [ "$MINOR" = "1" ]; then MAJOR="1" ; fi 
-		NEWRR="v$RELEA.$MAJOR.$MINOR"
-		echo "######### TAG $REPO -> $LATEST -> $NEWRR auto:retag-and-release"
-		/usr/bin/git tag -a $NEWRR -m 'auto:retag-and-release'
+	LATEST="$(/usr/bin/git describe --tags --abbrev=0)"
+	RELEA="$(($(echo $LATEST | cut -d . -f 1) + 0))"
+	MAJOR="$(($(echo $LATEST | cut -d . -f 2) + 0))"
+	MINOR="$(($(echo $LATEST | cut -d . -f 3) + 1))"
+	if [ "$RELEA" = "0" ] && [ "$MAJOR" = "0" ] && [ "$MINOR" = "1" ]; then MAJOR="1"; fi
+	NEWRR="v$RELEA.$MAJOR.$MINOR"
+	echo "######### TAG $REPO -> $LATEST -> $NEWRR auto:retag-and-release"
+	/usr/bin/git tag -a $NEWRR -m 'auto:retag-and-release'
 }
 clean_push() {
 	if [ -e go.mod ]; then
@@ -58,8 +58,8 @@ clean_push() {
 	/usr/bin/git add .
 	/usr/bin/git commit -m "auto: sync upstream / update dependencies"
 	/usr/bin/git gc --quiet --auto || exit 1
-	if [ ! -z "$RETAG" ]; then retag ; fi
-	# /etc/action/git.push
+	if [ ! -z "$RETAG" ]; then retag; fi
+	/etc/action/git.push
 }
 build_project() {
 	echo "###################################################################################"
