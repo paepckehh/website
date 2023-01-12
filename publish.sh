@@ -50,7 +50,13 @@ clean_push() {
 	/usr/bin/git add .
 	/usr/bin/git commit -m "auto: sync upstream / update dependencies"
 	/usr/bin/git gc --quiet --auto || exit 1
-	/etc/action/git.push
+	if [ ! -z "$RETAG" ]; then 
+		LATEST=$(doasgit -C $BSD_GIT/.repo/github_com_paepckehh_$REPO describe --tags --abbrev=0)
+		NEWVER="$(( $(echo $LATEST | cut -d . -f 3 ) +1 ))"
+		echo $LATEST
+		echo $NEWVER 
+	fi
+	# /etc/action/git.push
 }
 build_project() {
 	echo "###################################################################################"
