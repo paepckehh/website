@@ -50,7 +50,7 @@ clean_push() {
 	/usr/bin/git add .
 	/usr/bin/git commit -m "auto: sync upstream / update dependencies"
 	/usr/bin/git gc --quiet --auto || exit 1
-	# sh /etc/action/git.push
+	/etc/action/git.push
 }
 build_project() {
 	echo "###################################################################################"
