@@ -3,9 +3,7 @@ setup() {
 	hq u
 	BSDlive goo
 	go version || exit 1
-	GOPREPONLY="true" /etc/action/fmt.sh || exit 1
 	GOPREPONLY="true" /etc/action/fmt.golang || exit 1
-	(cd $BSD_DEV/website && sh /etc/action/fmt.sh)
 	if [ "$DIST" == "pnoc" ]; then
 		export HTTPS_PROXY=127.0.0.80:8080
 		export SSL_CERT_FILE=/etc/ssl/rootCA.pem
@@ -34,28 +32,33 @@ rebuild() {
 	/usr/bin/git prune-packed
 	/usr/bin/git fsck --strict --unreachable --dangling --full --cache
 }
+retag() {
+		LATEST="$(/usr/bin/git describe --tags --abbrev=0)"
+		RELEA="$((  $(echo $LATEST | cut -d . -f 1) + 0  ))"
+		MAJOR="$((  $(echo $LATEST | cut -d . -f 2) + 0  ))"
+		MINOR="$((  $(echo $LATEST | cut -d . -f 3) + 1  ))"
+		if [ "$RELEA" = "0" ] && [ "$MAJOR" = "0" ] && [ "$MINOR" = "1" ]; then MAJOR="1" ; fi 
+		NEWRR="v$RELEA.$MAJOR.$MINOR"
+		echo "######### TAG $REPO -> $LATEST -> $NEWRR auto:retag-and-release"
+		/usr/bin/git tag -a $NEWRR -m 'auto:retag-and-release'
+}
 clean_push() {
 	if [ -e go.mod ]; then
 		sh /etc/action/fmt.golang || exit 1
-		go version || exit 1
+		go version > /dev/null 2>&1 || exit 1
 		rm -rf go.mod go.sum > /dev/null 2>&1
-		go mod init paepcke.de/$REPO
+		go mod init paepcke.de/$REPO > /dev/null 2>&1 || exit 1
 		case $REPO in
 		gps*) ;;
 		*) sed -i '' -e 's/go 1\.20/go 1\.19/g' go.mod ;;
 		esac
-		GOSUMDB="sum.golang.org+033de0ae+Ac4zctda0e5eza+HJyk9SxEdh+s3Ux18htTTAD8OuAn8" go mod tidy
+		GOSUMDB="sum.golang.org+033de0ae+Ac4zctda0e5eza+HJyk9SxEdh+s3Ux18htTTAD8OuAn8" go mod tidy || exit 1
 	fi
 	/usr/bin/git rm -r --cached .
 	/usr/bin/git add .
 	/usr/bin/git commit -m "auto: sync upstream / update dependencies"
 	/usr/bin/git gc --quiet --auto || exit 1
-	if [ ! -z "$RETAG" ]; then 
-		LATEST=$(doasgit -C $BSD_GIT/.repo/github_com_paepckehh_$REPO describe --tags --abbrev=0)
-		NEWVER="$(( $(echo $LATEST | cut -d . -f 3 ) +1 ))"
-		echo $LATEST
-		echo $NEWVER 
-	fi
+	if [ ! -z "$RETAG" ]; then retag ; fi
 	# /etc/action/git.push
 }
 build_project() {
@@ -91,7 +94,7 @@ build_project() {
 	fi
 	sed -i '' -e "s/XXXPKGXXX/$REPO/g" index.html
 	echo "<tr><td><a href="$REPO"><button>$REPO</button></a></td></tr>" >> $INDEX
-	cd $BSD_DEV/$REPO > /dev/null 2>&1 || continue
+	cd $BSD_DEV/$REPO || exit 1
 	if [ -x .git ]; then
 		if [ "$DIST" == "pnoc" ]; then clean_push; fi
 		if [ "$DIST" == "bsrv" ]; then rebuild; fi
