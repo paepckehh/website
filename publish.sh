@@ -95,6 +95,9 @@ build_project() {
 	sed -i '' -e "s/XXXPKGXXX/$REPO/g" index.html
 	echo "<tr><td><a href="$REPO"><button>$REPO</button></a></td></tr>" >> $INDEX
 	cd $BSD_DEV/$REPO || exit 1
+	if [ "$FIXURL" == "true" ] && [ -e README.md ]; then
+		goo.xurls.fix README.md || exit 1
+	fi
 	if [ -x .git ]; then
 		if [ "$DIST" == "pnoc" ]; then clean_push; fi
 		if [ "$DIST" == "bsrv" ]; then rebuild; fi
@@ -102,9 +105,6 @@ build_project() {
 			LATEST=$(doasgit -C $BSD_GIT/.repo/github_com_paepckehh_$REPO describe --tags --abbrev=0)
 			echo "$REPO => tag: $LATEST"
 			HQ_ADD_SIGNIFY=true sh /etc/action/git.sign github_com_paepckehh_$REPO $LATEST
-		fi
-		if [ "$FIXURL" == "true" ] && [ -e README.md ]; then
-			goo.xurls.fix README.md || exit 1
 		fi
 	fi
 	echo "### [done] [$REPO]"
