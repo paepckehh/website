@@ -124,7 +124,10 @@ action() {
 	for REPO in $REPOS; do
 		cd $BSD_DEV/$REPO && if [ -e .export ]; then build_project; fi
 	done
-	echo "</table></div><br><br><br><a href="imp.html"><button> [impressum] [contact] </button></a><br></body></html>" >> $INDEX
+	echo "</table></div><br><br>" >> $INDEX
+	echo "repos<br><a href="https://github.com/paepckehh"><button>github</button></a> <a href="https://gitlab.com/paepcke"><button>gitlab</button></a> <a href="https://codeberg.org/paepcke"><button>codeberg</button></a> <a href="https://sr.ht/~paepcke"><button>sourcehut</button></a><br><br>" >> $INDEX
+	echo "<a href="imp.html"><button> [impressum] & [contact] </button></a><br>"
+	echo "</body></html>" >> $INDEX
 	cp -f $BASE/.template.imp.html $WWW/imp.html
 	cp -f $BASE/.template.keys $WWW/keys/keys
 	cp -f $BASE/.template.keys $WWW/paepcke.keys
