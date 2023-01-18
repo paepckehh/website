@@ -134,6 +134,7 @@ action() {
 	cp -f $BASE/.template.keys.hqs $WWW/keys/keys.hqs
 	cp -f $BASE/.template.keys.hqs $WWW/paepcke.keys.hqs
 	cp -f $BASE/.IE6RYZ-S3-DLPR3X-RH-QNPPWOXXCB $WWW/IE6RYZ-S3-DLPR3X-RH-QNPPWOXXCB
+	cp -f $BASE/.IE6RYZ-S3-DLPR3X-RH-QNPPWOXXCB.signify.pub $WWW/IE6RYZ-S3-DLPR3X-RH-QNPPWOXXCB.signify.pub
 	cp -f $BASE/.allowed_signers $WWW/allowed_signers
 	cp -f $BASE/.allowed_signers.hqs $WWW/allowed_signers.hqs
 	chown -R 0:0 $WWW
