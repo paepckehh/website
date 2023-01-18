@@ -39,8 +39,8 @@ retag() {
 	MINOR="$(($(echo $LATEST | cut -d . -f 3) + 1))"
 	if [ "$RELEA" = "0" ] && [ "$MAJOR" = "0" ] && [ "$MINOR" = "1" ]; then MAJOR="1"; fi
 	NEWRR="v$RELEA.$MAJOR.$MINOR"
-	echo "######### TAG $REPO -> $LATEST -> $NEWRR auto:retag-and-release"
-	/usr/bin/git tag -a $NEWRR -m 'auto:retag-and-release'
+	echo "######### TAG $REPO -> $LATEST -> $NEWRR auto:sign-and-release"
+	/usr/bin/git tag -s $NEWRR -m 'auto:sign-and-release'
 }
 clean_push() {
 	if [ -e go.mod ]; then
@@ -99,6 +99,7 @@ build_project() {
 		goo.xurls.fix README.md || exit 1
 	fi
 	if [ -x .git ]; then
+		. /etc/action/git.config
 		if [ "$DIST" == "pnoc" ]; then clean_push; fi
 		if [ "$DIST" == "bsrv" ]; then rebuild; fi
 		if [ ! -z "$UPSIG" ]; then
@@ -130,7 +131,11 @@ action() {
 	cp -f $BASE/.template.imp.html $WWW/imp.html
 	cp -f $BASE/.template.keys $WWW/keys/keys
 	cp -f $BASE/.template.keys $WWW/paepcke.keys
+	cp -f $BASE/.template.keys.hqs $WWW/keys/keys.hqs
+	cp -f $BASE/.template.keys.hqs $WWW/paepcke.keys.hqs
 	cp -f $BASE/.IE6RYZ-S3-DLPR3X-RH-QNPPWOXXCB $WWW/IE6RYZ-S3-DLPR3X-RH-QNPPWOXXCB
+	cp -f $BASE/.allowed_signers $WWW/allowed_signers
+	cp -f $BASE/.allowed_signers.hqs $WWW/allowed_signers.hqs
 	chown -R 0:0 $WWW
 	chmod -R o=rX,g=rX,u=rX $WWW
 	for PAGES in $TARGETPAGES; do
