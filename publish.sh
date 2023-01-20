@@ -99,7 +99,7 @@ build_project() {
 		goo.xurls.fix README.md || exit 1
 	fi
 	if [ -x .git ]; then
-		. /etc/action/git.config
+		# . /etc/action/git.config
 		if [ "$DIST" == "pnoc" ]; then clean_push; fi
 		if [ "$DIST" == "bsrv" ]; then rebuild; fi
 		if [ ! -z "$UPSIG" ]; then
