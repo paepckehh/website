@@ -49,7 +49,10 @@ clean_push() {
 		rm -rf go.mod go.sum > /dev/null 2>&1
 		go mod init paepcke.de/$REPO > /dev/null 2>&1 || exit 1
 		case $REPO in
-		gps*) ;;
+		gps*) 
+			sed -i '' -e 's/go 1\.21/go 1\.20/g' go.mod
+			sed -i '' -e 's/go 1\.22/go 1\.20/g' go.mod
+			;;
 		*)
 			sed -i '' -e 's/go 1\.20/go 1\.19/g' go.mod
 			sed -i '' -e 's/go 1\.21/go 1\.19/g' go.mod
