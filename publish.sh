@@ -133,7 +133,7 @@ action() {
 		cd $BSD_DEV/$REPO && if [ -e .export ]; then build_project; fi
 	done
 	echo "</table></div><br><br>" >> $INDEX
-	echo "<a href=\"https://infosec.exchange/@paepcke\"> <button> [social] </button> </a> <a href=\"imp.html\"> <button> [contact] & [impressum] </button> </a><br>" >> $INDEX
+	echo "<a href=\"https://infosec.exchange/@paepcke\"> <button> [social] </button> </a> <a href=\"imp.html\"> <button> [contact] [keys] [impressum] </button> </a><br>" >> $INDEX
 	echo "</body></html>" >> $INDEX
 	cp -f $BASE/.template.imp.html $WWW/imp.html
 	cp -f $BASE/.template.keys $WWW/keys/keys
