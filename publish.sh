@@ -49,7 +49,7 @@ clean_push() {
 		rm -rf go.mod go.sum > /dev/null 2>&1
 		go mod init paepcke.de/$REPO > /dev/null 2>&1 || exit 1
 		case $REPO in
-		gps*) 
+		gps*)
 			sed -i '' -e 's/go 1\.21/go 1\.20/g' go.mod
 			sed -i '' -e 's/go 1\.22/go 1\.20/g' go.mod
 			;;
@@ -133,7 +133,10 @@ action() {
 		cd $BSD_DEV/$REPO && if [ -e .export ]; then build_project; fi
 	done
 	echo "</table></div><br><br>" >> $INDEX
-	echo "<a href=\"https://infosec.exchange/@paepcke\"> <button> [social] </button> </a> <a href=\"imp.html\"> <button> [contact] [keys] [impressum] </button> </a><br>" >> $INDEX
+	echo -n '<a href="https://infosec.exchange/@paepcke"> <button> [social] [news] [blog] </button> </a> ' >> $INDEX
+	echo -n '<a href="https://github.com/paepckehh"> <button> [github.com] </button> </a> ' >> $INDEX
+	echo -n '<a href="imp.html"> <button> [contact] [keys] [impressum] </button> </a> ' >> $INDEX
+	echo "<br>" >> $INDEX
 	echo "</body></html>" >> $INDEX
 	cp -f $BASE/.template.imp.html $WWW/imp.html
 	cp -f $BASE/.template.keys $WWW/keys/keys
