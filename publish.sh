@@ -43,6 +43,7 @@ retag() {
 	/usr/bin/git tag -s $NEWRR -m 'auto:sign-and-release'
 }
 clean_push() {
+	if [ ! -z "$GITPULL" ] && [ -x .git ]; then sh /etc/action/git.pull.push ; fi 
 	if [ -e go.mod ]; then
 		sh /etc/action/fmt.golang || exit 1
 		go version > /dev/null 2>&1 || exit 1
@@ -102,11 +103,9 @@ build_project() {
 	sed -i '' -e "s/XXXPKGXXX/$REPO/g" index.html
 	echo "<tr><td><a href="$REPO"><button>$REPO</button></a></td></tr>" >> $INDEX
 	cd $BSD_DEV/$REPO || exit 1
-	if [ "$FIXURL" == "true" ] && [ -e README.md ]; then
-		goo.xurls.fix README.md || exit 1
-	fi
+	if [ ! -z "$FIXURL" ] && [ -e README.md ]; then goo.xurls.fix README.md || exit 1 ; fi
 	if [ -x .git ]; then
-		# . /etc/action/git.config
+		if [ ! -z "$RECONFGIT" ]; then . /etc/action/git.config; fi
 		if [ "$DIST" == "pnoc" ]; then clean_push; fi
 		if [ "$DIST" == "bsrv" ]; then rebuild; fi
 		if [ ! -z "$UPSIG" ]; then
