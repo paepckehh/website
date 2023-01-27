@@ -43,7 +43,7 @@ retag() {
 	/usr/bin/git tag -s $NEWRR -m 'auto:sign-and-release'
 }
 clean_push() {
-	if [ ! -z "$GITPULL" ] && [ -x .git ]; then sh /etc/action/git.pull.push ; fi 
+	if [ ! -z "$GITPULL" ] && [ -x .git ]; then sh /etc/action/git.pull.push.force ; fi 
 	if [ -e go.mod ]; then
 		sh /etc/action/fmt.golang || exit 1
 		go version > /dev/null 2>&1 || exit 1
