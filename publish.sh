@@ -50,14 +50,10 @@ clean_push() {
 		rm -rf go.mod go.sum > /dev/null 2>&1
 		go mod init paepcke.de/$REPO > /dev/null 2>&1 || exit 1
 		case $REPO in
-		gps*)
+		*)
 			sed -i '' -e 's/go 1\.21/go 1\.20/g' go.mod
 			sed -i '' -e 's/go 1\.22/go 1\.20/g' go.mod
-			;;
-		*)
-			sed -i '' -e 's/go 1\.20/go 1\.19/g' go.mod
-			sed -i '' -e 's/go 1\.21/go 1\.19/g' go.mod
-			sed -i '' -e 's/go 1\.22/go 1\.19/g' go.mod
+			sed -i '' -e 's/go 1\.23/go 1\.20/g' go.mod
 			;;
 		esac
 		GOSUMDB="sum.golang.org+033de0ae+Ac4zctda0e5eza+HJyk9SxEdh+s3Ux18htTTAD8OuAn8" go mod tidy || exit 1
