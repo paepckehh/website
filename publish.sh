@@ -133,6 +133,8 @@ action() {
 	echo -n '<a href="imp.html"> <button> [contact] [keys] [impressum] </button> </a> ' >> $INDEX
 	echo "<br>" >> $INDEX
 	echo "</body></html>" >> $INDEX
+	mkdir -p $WWW/contact
+	cp -f $BASE/.template.imp.html $WWW/contact.html
 	cp -f $BASE/.template.imp.html $WWW/imp.html
 	cp -f $BASE/.template.keys $WWW/keys/keys
 	cp -f $BASE/.template.keys $WWW/paepcke.keys
