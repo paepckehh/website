@@ -71,6 +71,7 @@ build_project() {
 	NEW="$WWW/$REPO"
 	mkdir -p "$NEW" || exit 1
 	cd $NEW || exit 1
+	if [ -e .internal ]; then return ; fi
 	cp $BASE/.template.project.html index.html || exit 1
 	if [ -e $BSD_DEV/$REPO/.apionly ]; then
 		sed -i '' -e "/INSTALL/d" index.html
