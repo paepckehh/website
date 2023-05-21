@@ -36,7 +36,7 @@ retag() {
 	LATEST="$(/usr/bin/git describe --tags --abbrev=0)"
 	RELEA="$(($(echo $LATEST | cut -d . -f 1) + 0))"
 	MAJOR="$(($(echo $LATEST | cut -d . -f 2) + 0))"
-	MINOR="$(($(echo $LATEST | cut -d . -f 3) + 3))"
+	MINOR="$(($(echo $LATEST | cut -d . -f 3) + 1))"
 	if [ "$RELEA" = "0" ] && [ "$MAJOR" = "0" ] && [ "$MINOR" = "1" ]; then MAJOR="1"; fi
 	NEWRR="v$RELEA.$MAJOR.$MINOR"
 	echo "######### TAG $REPO -> $LATEST -> $NEWRR auto:sign-and-release"
