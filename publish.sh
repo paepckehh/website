@@ -79,20 +79,22 @@ git_action() {
 	export GIT_HTTP_USER_AGENT=git
 	export GCMD="git"
 	export GITCMD="$GCMD $GITACTION"
-	export REPOS="codeberg.org github.com gitlab.com sr.ht"
+	export REPOS="codeberg.org gitlab.com sr.ht github.com"
 	unset HTTPS_PROXY HTTP_PROXY
 	for DOM in $REPOS; do
 		if [ -e ".$DOM" ]; then
-			PROTO="ssh://" && ID="git" && TARGETID=":paepcke" &&ADDR="$DOM" && SUFFIX=".git"
+			ID="git" && TARGETID=":paepcke" &&ADDR="$DOM" && SUFFIX=".git"
 			case $DOM in
 			github.com) TARGETID=":paepckehh" ;;
 			codeberg.org) ;;
 			gitlab.com) ;;
 			sr.ht) ;;
 			esac
-			URL="$PROTO$ID@$ADDR$TARGETID/$REPONAME$SUFFIX"
+			URL="ssh://$ID@$ADDR$TARGETID/$REPONAME$SUFFIX"
 			echo "########################################################################"
 			echo "$URL"
+			git remote rm origin
+			git remote add origin $URL
 		fi
 	done
 }
