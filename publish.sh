@@ -108,10 +108,10 @@ git_pull() {
 	GITACTION="pull -ff --prune --force" git_action
 }
 clean_push() {
-	if [ -x .git ]; then
-		git_pull
-		git_push
-	fi
+#	if [ -x .git ]; then
+#		git_pull
+#		git_push
+#	fi
 	if [ -e go.mod ]; then
 		gofmt -s -w -d . || exit 1
 		go version >/dev/null 2>&1 || exit 1
