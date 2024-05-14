@@ -90,7 +90,7 @@ git_action() {
 			gitlab.com) ;;
 			sr.ht) ;;
 			esac
-			URL="ssh://$ID@$ADDR$TARGETID/$REPONAME$SUFFIX"
+			URL="$ID@$ADDR$TARGETID/$REPONAME$SUFFIX"
 			echo "########################################################################"
 			echo "$URL"
 			git remote rm origin
