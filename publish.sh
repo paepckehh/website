@@ -97,7 +97,7 @@ git_action() {
 			git remote add origin $URL
 			git fetch
 			git branch --set-upstream-to=origin/main main
-			git rebase --skip 
+			# git rebase --skip 
 			git $GITACTION
 		fi
 	done
