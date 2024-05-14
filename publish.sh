@@ -209,8 +209,8 @@ action() {
 	cp -f $BASE/.IE6RYZ-S3-DLPR3X-RH-QNPPWOXXCB.signify.pub $WWW/IE6RYZ-S3-DLPR3X-RH-QNPPWOXXCB.signify.pub
 	cp -f $BASE/.allowed_signers $WWW/allowed_signers
 	cp -f $BASE/.allowed_signers.hqs $WWW/allowed_signers.hqs
-	chown -R 0:0 $WWW
-	chmod -R o=rX,g=rX,u=rX $WWW
+	# sudo chown -R 0:0 $WWW
+	# sudo chmod -R o=rX,g=rX,u=rX $WWW
 	for PAGES in $TARGETPAGES; do
 		if [ -x "$PAGES" ]; then
 			cp -af $WWW/* $PAGES/
