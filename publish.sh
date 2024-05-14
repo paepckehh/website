@@ -1,8 +1,8 @@
 #!/bin/sh
 setup() {
-	# freebsd: sudo pkg install git go
-	# linux: sudo apt install git go
-	# macos: brew install git go
+	# freebsd: sudo pkg install git go yq
+	# linux: sudo apt install git go yq
+	# macos: brew install git go yq
 	go version || exit 1
 	git version || exit 1
 	export GOPROXY="proxy.golang.org"
@@ -33,7 +33,7 @@ retag() {
 	LATEST="$(git describe --tags --abbrev=0)"
 	RELEA="$(($(echo $LATEST | cut -d . -f 1) + 0))"
 	MAJOR="$(($(echo $LATEST | cut -d . -f 2) + 0))"
-	MINOR="$(($(echo $LATEST | cut -d . -f 3) + 1))"
+	MINOR="$(($(echo $LATEST | cut -d . -f 3) + 2))"
 	if [ "$RELEA" = "0" ] && [ "$MAJOR" = "0" ] && [ "$MINOR" = "1" ]; then MAJOR="1"; fi
 	NEWRR="v$RELEA.$MAJOR.$MINOR"
 	echo "######### TAG $REPO -> $LATEST -> $NEWRR auto:sign-and-release"
@@ -86,34 +86,46 @@ git_action() {
 			ID="git" && TARGETID=":paepcke" &&ADDR="$DOM" && SUFFIX=".git"
 			case $DOM in
 			github.com) TARGETID=":paepckehh" ;;
-			codeberg.org) ;;
-			gitlab.com) ;;
-			sr.ht) ;;
+			codeberg.org) continue ;;
+			gitlab.com) continue ;;
+			sr.ht) continue ;;
 			esac
 			URL="$ID@$ADDR$TARGETID/$REPONAME$SUFFIX"
 			echo "########################################################################"
 			echo "$URL"
 			git remote rm origin
 			git remote add origin $URL
+			git fetch
+			git branch --set-upstream-to=origin/main main
+			git rebase --skip 
+			git $GITACTION
 		fi
 	done
 }
 git_push() {
 	GITACTION="push --all --prune --force" git_action
 }
+git_push_tags() {
+	GITACTION="push --prune --force --tags" git_action
+}
 git_pull() {
 	GITACTION="pull -ff --prune --force" git_action
 }
 clean_push() {
-#	if [ -x .git ]; then
-#		git_pull
-#		git_push
-#	fi
+	if [ -x .git ]; then
+		git_pull
+		git_push
+	fi
 	if [ -e go.mod ]; then
 		gofmt -s -w -d . || exit 1
 		go version >/dev/null 2>&1 || exit 1
 		rm -rf go.mod go.sum >/dev/null 2>&1
-		go mod init paepcke.de/$REPO >/dev/null 2>&1 || exit 1
+		go mod init paepcke.de/$REPO || exit 1
+		go mod tidy -go=1.21
+		sed -i '' -e '/^toolchain/d' go.mod
+		if [ -w .github/workflows/golang.yml ]; then 
+			yq -i '.jobs.build.strategy.matrix.go-version = [1.21]' .github/workflows/golang.yml
+		fi
 		GOSUMDB="sum.golang.org+033de0ae+Ac4zctda0e5eza+HJyk9SxEdh+s3Ux18htTTAD8OuAn8" go mod tidy || exit 1
 	fi
 	git rm -r --cached .
@@ -122,6 +134,7 @@ clean_push() {
 	git gc --quiet --auto || exit 1
 	if [ ! -z "$RETAG" ]; then retag; fi
 	git_push
+	git_push_tags
 }
 build_project() {
 	echo "###################################################################################"
@@ -180,7 +193,7 @@ action() {
 	for REPO in $REPOS; do
 		cd $MYDEV/$REPO && (
 			if [ -e .export ] && [ -x .git ]; then
-				echo -n "[$REPO] "
+				echo "[$REPO] "
 				git gc --quiet || exit 1
 			fi
 		)
