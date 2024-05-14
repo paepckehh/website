@@ -119,7 +119,7 @@ clean_push() {
 	git commit -S -m "auto: sync upstream / update dependencies"
 	git gc --quiet --auto || exit 1
 	if [ ! -z "$RETAG" ]; then retag; fi
-	# git_push
+	git_push
 }
 build_project() {
 	echo "###################################################################################"
