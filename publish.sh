@@ -83,21 +83,16 @@ git_action() {
 	unset HTTPS_PROXY HTTP_PROXY
 	for DOM in $REPOS; do
 		if [ -e ".$DOM" ]; then
-			PROTO="ssh://" && USR="paepcke" && ID="git" && TARGETID="/$USR" && SUFFIX="" && ADDR="$DOM"
+			PROTO="ssh://" && ID="git" && TARGETID=":paepcke" &&ADDR="$DOM" && SUFFIX=".git"
 			case $DOM in
-			github.com) ADDR="140.82.114.3" TARGETID="/paepckehh" ;;
-			codeberg.org) ADDR="217.197.91.145" ;;
-			gitlab.com) ADDR="172.65.251.78" ;;
-			sr.ht) ADDR="173.195.146.142" TARGETID="/~paepcke" ;;
-			esac
-			case $PROTO in
-			https://) ID="$USR:$(cat $MYKEYS/$DOM/api)" && TARGETID="/$USR" && ADDR="$DOMPREFIX$DOM" ;;
+			github.com) TARGETID=":paepckehh" ;;
+			codeberg.org) ;;
+			gitlab.com) ;;
+			sr.ht) ;;
 			esac
 			URL="$PROTO$ID@$ADDR$TARGETID/$REPONAME$SUFFIX"
 			echo "########################################################################"
-			echo "### UPDATE: $PROTO $ID @ $DOM $TARGETID /$REPONAME [$URL]"
-			XCMD="$GITCMD $URL"
-			echo $XCMD
+			echo "$URL"
 		fi
 	done
 }
