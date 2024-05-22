@@ -7,21 +7,26 @@ setup() {
 	git version || exit 1
 	export GOPROXY="proxy.golang.org"
 	export GOSUMDB="sum.golang.org+033de0ae+Ac4zctda0e5eza+HJyk9SxEdh+s3Ux18htTTAD8OuAn8"
-	export MYDEV="/Users/mpp/dev"
+	export MYDEV="$HOME/projects"
 	export BASE="$MYDEV/website"
 	export WWW="$BASE/www"
 	export INDEX=$WWW/index.html
-	export LIVE="/.worker/gate/var/squid/reports"
-	export TARGETPAGES="$MYDEV/paepckehh.github.io $MYDEV/pages"
-	export UUID="$(uuidgen)"
 	export REPOS="$(cd $MYDEV && ls -I | grep -v action)"
-	export MYKEYS="~/.keys"
 	if [ -z "$REPOS" ] || [ ! -x "$BASE" ]; then echo "unable to access repo" && exit 1; fi
 	sudo rm -rf $WWW || exit 1
 	mkdir -p $WWW || exit 1
 	cp -f $BASE/.template.index.html $INDEX || exit 1
 }
 rebuild() {
+	git config core.bare false
+	git config pull.ff only
+	git config commit.gpgsign true
+	git config user.name "Paepcke, Michael "
+	git config user.email "git@paepcke.de"
+	git config user.signingkey "~/.ssh/id_ed25519.pub"
+	git config gpg.format "ssh"
+	git config gpg.ssh.allowedSignersFile "~/.ssh/allowed_signers"
+	git config core.sshCommand "ssh -4akxy -i ~/.ssh/id_ed25519 -m hmac-sha2-512-etm@openssh.com -c chacha20-poly1305@openssh.com -o MACs=hmac-sha2-512-etm@openssh.com -o Ciphers=chacha20-poly1305@openssh.com -o KexAlgorithms=curve25519-sha256 -o PubkeyAcceptedKeyTypes=ssh-ed25519 -o UserKnownHostsFile=~/.ssh/known_hosts -o StrictHostKeyChecking=yes -o UpdateHostKeys=no -o ServerAliveInterval=120 -o ServerAliveCountMax=3 -o TCPKeepAlive=no -o Tunnel=no -o VisualHostKey=no -o Compression=no -o VerifyHostKeyDNS=no -o AddKeysToAgent=no -o ForwardAgent=no -o ClearAllForwardings=yes -o IdentitiesOnly=yes -o IdentityAgent=none"
 	git prune --expire=now
 	git reflog expire --expire-unreachable=now --rewrite --all
 	git pack-refs --all
@@ -83,7 +88,7 @@ git_action() {
 	unset HTTPS_PROXY HTTP_PROXY
 	for DOM in $REPOS; do
 		if [ -e ".$DOM" ]; then
-			ID="git" && TARGETID=":paepcke" &&ADDR="$DOM" && SUFFIX=".git"
+			ID="git" && TARGETID=":paepcke" && ADDR="$DOM" && SUFFIX=".git"
 			case $DOM in
 			github.com) TARGETID=":paepckehh" ;;
 			codeberg.org) continue ;;
@@ -97,7 +102,7 @@ git_action() {
 			git remote add origin $URL
 			git fetch
 			git branch --set-upstream-to=origin/main main
-			# git rebase --skip 
+			# git rebase --skip
 			git $GITACTION
 		fi
 	done
@@ -123,7 +128,7 @@ clean_push() {
 		go mod init paepcke.de/$REPO || exit 1
 		go mod tidy -go=1.21
 		sed -i '' -e '/^toolchain/d' go.mod
-		if [ -w .github/workflows/golang.yml ]; then 
+		if [ -w .github/workflows/golang.yml ]; then
 			yq -i '.jobs.build.strategy.matrix.go-version = [1.21]' .github/workflows/golang.yml
 		fi
 		GOSUMDB="sum.golang.org+033de0ae+Ac4zctda0e5eza+HJyk9SxEdh+s3Ux18htTTAD8OuAn8" go mod tidy || exit 1
@@ -173,15 +178,6 @@ build_project() {
 	cd $MYDEV/$REPO || exit 1
 	if [ ! -z "$FIXURL" ] && [ -e README.md ]; then goo.xurls.fix README.md || exit 1; fi
 	if [ -x .git ]; then
-		git config core.bare false
-		git config pull.ff only
-		git config commit.gpgsign true
-		git config user.name "Paepcke, Michael "
-		git config user.email "git@paepcke.de"
-		git config user.signingkey "~/.ssh/id_ed25519.pub"
-		git config gpg.format "ssh"
-		git config gpg.ssh.allowedSignersFile "~/.ssh/allowed_signers"
-		git config core.sshCommand "ssh -4akxy -i ~/.ssh/id_ed25519 -m hmac-sha2-512-etm@openssh.com -c chacha20-poly1305@openssh.com -o MACs=hmac-sha2-512-etm@openssh.com -o Ciphers=chacha20-poly1305@openssh.com -o KexAlgorithms=curve25519-sha256 -o PubkeyAcceptedKeyTypes=ssh-ed25519 -o UserKnownHostsFile=~/.ssh/known_hosts -o StrictHostKeyChecking=yes -o UpdateHostKeys=no -o ServerAliveInterval=120 -o ServerAliveCountMax=3 -o TCPKeepAlive=no -o Tunnel=no -o VisualHostKey=no -o Compression=no -o VerifyHostKeyDNS=no -o AddKeysToAgent=no -o ForwardAgent=no -o ClearAllForwardings=yes -o IdentitiesOnly=yes -o IdentityAgent=none"
 		rebuild
 		clean_push
 	fi
@@ -221,21 +217,6 @@ action() {
 	cp -f $BASE/.allowed_signers.hqs $WWW/allowed_signers.hqs
 	# sudo chown -R 0:0 $WWW
 	# sudo chmod -R o=rX,g=rX,u=rX $WWW
-	for PAGES in $TARGETPAGES; do
-		if [ -x "$PAGES" ]; then
-			cp -af $WWW/* $PAGES/
-			(
-				cd $PAGES && (
-					if [ "$DIST" == "pnoc" ]; then clean_push; fi
-				)
-			)
-		fi
-	done
-	if [ -x "$LIVE" ]; then
-		mv -f $LIVE/www $LIVE/www.$UUID
-		cp -af $WWW $LIVE/
-		rm -rf $LIVE/www.$UUID >/dev/null 2>&1
-	fi
 }
 setup
 action
